@@ -224,7 +224,7 @@ public class RealSocket
 		foreach(string address in this.neighborAddresses) {
 			ConnectionId cid = mNetwork.Connect(address);
 			mConnections.Add(cid);
-			Debug.Log("Connecting to " + address + " ...");
+			Debug.Log("Connecting to ADDRESS=" + address + ", cid=" + cid.id + " ...");
 			this.SendString(cid, this.SETTING_NODE + address);
 		}
 	}
