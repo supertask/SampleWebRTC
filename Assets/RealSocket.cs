@@ -61,6 +61,8 @@ public class RealSocket
     private List<ConnectionId> mConnections = new List<ConnectionId>();
 	private WebSocket ws;
 
+	private string SETTING_NODE = "SETTING_NODE@";
+
 
 	public RealSocket() {
 		this.ws = new WebSocket(new Uri(this.websocketUrl));
@@ -126,7 +128,7 @@ public class RealSocket
 					Debug.Log("Server closed. No incoming connections possible until restart.");
                     break;
                 case NetEventType.NewConnection:
-                    mConnections.Add(evt.ConnectionId);
+                    //mConnections.Add(evt.ConnectionId);
                     //either user runs a client and connected to a server or the
                     //user runs the server and a new client connected
 					Debug.Log("New local connection! ID: " + evt.ConnectionId);
@@ -143,7 +145,7 @@ public class RealSocket
                     Reset();
                     break;
                 case NetEventType.Disconnected:
-                    mConnections.Remove(evt.ConnectionId);
+                    //mConnections.Remove(evt.ConnectionId);
                     //A connection was disconnected
                     //If this was the client then he was disconnected from the server
                     //if it was the server this just means that one of the clients left
@@ -179,8 +181,8 @@ public class RealSocket
         MessageDataBuffer buffer = (MessageDataBuffer)evt.MessageData;
         string msg = Encoding.UTF8.GetString(buffer.Buffer, 0, buffer.ContentLength);
 
-		if (msg.IndexOf("SETTING_NODE@") == 0) {
-			string newAddress = msg.Remove (0, "SETTING_NODE@".Length).Trim();
+		if (msg.IndexOf(this.SETTING_NODE) == 0) {
+			string newAddress = msg.Remove (0, this.SETTING_NODE.Length).Trim();
 			this.mConnections.Add(evt.ConnectionId);
 			ConnectionId cid = mNetwork.Connect(newAddress);
 			Debug.Assert (cid == evt.ConnectionId);
@@ -189,18 +191,29 @@ public class RealSocket
         buffer.Dispose();
     }
 
+	public bool checkConnection() {
+		if (mNetwork == null || mConnections.Count == 0) {
+			Debug.Log ("No connection. Can't send message.");
+			return false;
+		}
+		else { return true; }
+	}
+
 	/*
 	 * 他のノードに指定したメッセージをブロードキャストする．
 	 */
 	public void BroadcastToNeighbors(string msg, bool reliable = true) {
-		if (mNetwork == null || mConnections.Count == 0) {
-			Debug.Log ("No connection. Can't send message.");
-		}
-		else {
+		if (this.checkConnection()) {
 			byte[] msgData = Encoding.UTF8.GetBytes (msg);
 			foreach (ConnectionId id in mConnections) {
 				mNetwork.SendData (id, msgData, 0, msgData.Length, reliable);
 			}
+		}
+	}
+	public void SendString(ConnectionId cid, string msg, bool reliable = true) {
+		if (this.checkConnection()) {
+			byte[] msgData = Encoding.UTF8.GetBytes (msg);
+			mNetwork.SendData (cid, msgData, 0, msgData.Length, reliable);
 		}
 	}
 
@@ -240,7 +253,7 @@ public class RealSocket
 			ConnectionId cid = mNetwork.Connect(address);
 			mConnections.Add(cid);
 			Debug.Log("Connecting to " + address + " ...");
-				
+			this.SendString(cid, this.SETTING_NODE + address);
 		}
 	}
 
