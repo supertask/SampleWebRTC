@@ -14,9 +14,13 @@ public class Main : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	public void Update () {
-		
+	//public void Update () {
+	//}
+
+    public void FixedUpdate() {
+		this.socket.FixedUpdate();
 	}
+
 	public void OnApplicationQuit() {
 		this.socket.Close();
 	}

@@ -88,7 +88,7 @@ public class RealSocket
 	/*
 	 * 必ず一定の感覚で呼ばれる．
 	 */
-    private void FixedUpdate() {
+    public void FixedUpdate() {
         this.ReceiveNetwork();
     }
 	private void ReceiveNetwork()
