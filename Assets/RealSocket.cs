@@ -69,13 +69,9 @@ public class RealSocket
     }
 
     private void Setup() {
-		Debug.Log("Initializing webrtc network");
-
 		mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(websocketUrl, new IceServer[] { new IceServer(uIceServer, uIceServerUser, uIceServerPassword), new IceServer(uIceServer2) });
         if (mNetwork == null)
-			Debug.Log("Failed to access webrtc ");
-        else
-			Debug.Log("WebRTCNetwork created");
+			Debug.Log("Failed to access webrtc!!!!");
     }
 
     private void Reset() {
@@ -180,6 +176,7 @@ public class RealSocket
 	private void ReceiveIncommingMessage(ref NetworkEvent evt) {
         MessageDataBuffer buffer = (MessageDataBuffer)evt.MessageData;
         string msg = Encoding.UTF8.GetString(buffer.Buffer, 0, buffer.ContentLength);
+		Debug.Log ("msg: " + msg);
 
 		if (msg.IndexOf(this.SETTING_NODE) == 0) {
 			string newAddress = msg.Remove (0, this.SETTING_NODE.Length).Trim();
@@ -217,6 +214,28 @@ public class RealSocket
 		}
 	}
 
+	private void ConnectToWebRTC() {
+		//WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
+		if (mNetwork == null) this.Setup();
+
+		mNetwork.StartServer(nodeID.ToString());
+		Debug.Log("StartServer " + nodeID.ToString());
+
+		foreach(string address in this.neighborAddresses) {
+			ConnectionId cid = mNetwork.Connect(address);
+			mConnections.Add(cid);
+			Debug.Log("Connecting to " + address + " ...");
+			this.SendString(cid, this.SETTING_NODE + address);
+		}
+	}
+
+
+	//
+	//
+	// Setting a signaling server(Websocket).
+	// ========================================================================
+	//
+
 	public IEnumerator Connect() {
 		yield return this.ws.Connect ();
 	}
@@ -242,20 +261,6 @@ public class RealSocket
 		this.ConnectToWebRTC();
 	}
 
-	private void ConnectToWebRTC() {
-		//WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
-		if (mNetwork == null) this.Setup();
-
-		mNetwork.StartServer(nodeID.ToString());
-		Debug.Log("StartServer " + nodeID.ToString());
-
-		foreach(string address in this.neighborAddresses) {
-			ConnectionId cid = mNetwork.Connect(address);
-			mConnections.Add(cid);
-			Debug.Log("Connecting to " + address + " ...");
-			this.SendString(cid, this.SETTING_NODE + address);
-		}
-	}
 
 	public void Close() {
 		string leaveSignal = "L" + this.nodeID;
