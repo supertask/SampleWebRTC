@@ -232,8 +232,7 @@ public class RealSocket
 			Debug.Log ("Connect to address," + address);
 			ConnectionId cid = mNetwork.Connect(address);
 			mConnections.Add(cid);
-			//Debug.Log("Connecting to ADDRESS=" + address + ", cid=" + cid.id + " ...");
-			Debug.Log("Hereeeeeeeeeeeeeeeeeeee: Send SETTING_NODE to address," + address);
+			Debug.Log("HHHHHHHHHHHH Connecting to ADDRESS=" + address + ", cid=" + cid.id + " ...");
 			this.SendString(cid, this.SETTING_NODE + address);
 		}
 	}
