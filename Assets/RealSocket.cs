@@ -61,7 +61,8 @@ public class RealSocket
     /// </summary>
     private IBasicNetwork mNetwork = null;
 
-	private string nodeID = "";
+	private string selfNodeID = "";
+	private string selfConnectionID = "";
 	private List<string> neighborAddresses = new List<string>();
     private List<ConnectionId> mConnections = new List<ConnectionId>();
 	private WebSocket ws;
@@ -139,7 +140,7 @@ public class RealSocket
 
                     //user runs a server. announce to everyone the new connection
                     //using the server side connection id as identification
-                    string msg = "New user " + evt.ConnectionId + " joined the room.";
+                    string msg = "New connectionId " + evt.ConnectionId + " joined the room.";
 					Debug.Log(msg);
 					this.BroadcastToNeighbors(msg);
                     break;
@@ -226,13 +227,14 @@ public class RealSocket
 	private void ConnectToWebRTC() {
 		//WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
 		if (mNetwork == null) this.Setup();
-		mNetwork.StartServer(nodeID.ToString());
+		mNetwork.StartServer(selfNodeID.ToString());
 
 		foreach(string address in this.neighborAddresses) {
+			Debug.Log ("Connect to address," + address);
 			ConnectionId cid = mNetwork.Connect(address);
 			mConnections.Add(cid);
 			//Debug.Log("Connecting to ADDRESS=" + address + ", cid=" + cid.id + " ...");
-			Debug.Log("Hereeeeeeeeeeeeeeeeeeee: Send SETTING_NODE to " + address);
+			Debug.Log("Hereeeeeeeeeeeeeeeeeeee: Send SETTING_NODE to address," + address);
 			this.SendString(cid, this.SETTING_NODE + address);
 		}
 	}
@@ -256,7 +258,7 @@ public class RealSocket
 				string[] nodeStrs = msg.Split (',');
 				neighborAddresses = new List<string>(nodeStrs);
 				int lastIndex = neighborAddresses.Count - 1;
-				this.nodeID = neighborAddresses[lastIndex];
+				this.selfNodeID = neighborAddresses[lastIndex];
 				neighborAddresses.RemoveAt(lastIndex);
 				break;
 			}
@@ -271,7 +273,7 @@ public class RealSocket
 
 
 	public void Close() {
-		string leaveSignal = "L" + this.nodeID;
+		string leaveSignal = "L" + this.selfNodeID;
 		Debug.Log(leaveSignal);
 		this.ws.SendString(leaveSignal);
 		this.ws.Close();
