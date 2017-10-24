@@ -14,8 +14,18 @@ public class Main : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	//public void Update () {
-	//}
+	public void Update () {
+		if (Input.GetKeyDown (KeyCode.H))
+			this.socket.SendString ("Hi how are you?");
+		else if (Input.GetKeyDown (KeyCode.G))
+			this.socket.SendString ("I'm good!");
+		else if (Input.GetKeyDown (KeyCode.Y))
+			this.socket.SendString ("And you?");
+		else if (Input.GetKeyDown (KeyCode.A))
+			this.socket.SendString("Awesome!!");
+		else if (Input.GetKeyDown (KeyCode.A))
+			this.socket.SendString("Pretty bad..");
+	} 
 
     public void FixedUpdate() {
 		this.socket.FixedUpdate();
