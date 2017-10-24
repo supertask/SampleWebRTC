@@ -187,6 +187,7 @@ public class RealSocket
 		Debug.Log ("msg: " + msg);
 
 		if (msg.IndexOf(this.SETTING_NODE) == 0) {
+			Debug.Log ("GGGGGGGGGGGGGGGGGeeeeet received: " + msg);
 			string newAddress = msg.Remove (0, this.SETTING_NODE.Length).Trim();
 			this.mConnections.Add(evt.ConnectionId);
 			ConnectionId cid = mNetwork.Connect(newAddress);
