@@ -129,13 +129,13 @@ public class RealSocket
                 case NetEventType.ServerClosed:
                     //server shut down. reaction to "Shutdown" call or
                     //StopServer or the connection broke down
-					Debug.Log("Server closed. No incoming connections possible until restart.");
+					Debug.Log("Server closed.");
                     break;
                 case NetEventType.NewConnection:
                     //mConnections.Add(evt.ConnectionId);
                     //either user runs a client and connected to a server or the
                     //user runs the server and a new client connected
-					Debug.Log("New local connection! ID: " + evt.ConnectionId);
+					//Debug.Log("New local connection! ID: " + evt.ConnectionId);
 
                     //user runs a server. announce to everyone the new connection
                     //using the server side connection id as identification
@@ -145,7 +145,7 @@ public class RealSocket
                     break;
                 case NetEventType.ConnectionFailed:
                     //Outgoing connection failed. Inform the user.
-					Debug.Log("Connection failed");
+					//Debug.Log("Connection failed");
                     Reset();
                     break;
                 case NetEventType.Disconnected:
@@ -153,7 +153,7 @@ public class RealSocket
                     //A connection was disconnected
                     //If this was the client then he was disconnected from the server
                     //if it was the server this just means that one of the clients left
-					Debug.Log("Local Connection ID " + evt.ConnectionId + " disconnected");
+					//Debug.Log("Local Connection ID " + evt.ConnectionId + " disconnected");
                     string userLeftMsg = "User " + evt.ConnectionId + " left the room.";
 
                     //show the server the message
@@ -225,14 +225,13 @@ public class RealSocket
 	private void ConnectToWebRTC() {
 		//WebRtcNetworkFactory factory = WebRtcNetworkFactory.Instance;
 		if (mNetwork == null) this.Setup();
-
 		mNetwork.StartServer(nodeID.ToString());
-		Debug.Log("StartServer " + nodeID.ToString());
 
 		foreach(string address in this.neighborAddresses) {
 			ConnectionId cid = mNetwork.Connect(address);
 			mConnections.Add(cid);
-			Debug.Log("Connecting to ADDRESS=" + address + ", cid=" + cid.id + " ...");
+			//Debug.Log("Connecting to ADDRESS=" + address + ", cid=" + cid.id + " ...");
+			Debug.Log("Hereeeeeeeeeeeeeeeeeeee: Send SETTING_NODE to " + address);
 			this.SendString(cid, this.SETTING_NODE + address);
 		}
 	}
