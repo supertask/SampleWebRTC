@@ -142,7 +142,7 @@ public class RealSocket
                     //using the server side connection id as identification
                     string msg = "New connectionId " + evt.ConnectionId + " joined the room.";
 					Debug.Log(msg);
-					this.BroadcastToNeighbors(msg);
+					//this.BroadcastToNeighbors(msg);
                     break;
                 case NetEventType.ConnectionFailed:
                     //Outgoing connection failed. Inform the user.
@@ -161,9 +161,7 @@ public class RealSocket
 					Debug.Log(userLeftMsg);
 
                     //other users left? inform them 
-                    if (mConnections.Count > 0) {
-						BroadcastToNeighbors(userLeftMsg);
-                    }
+                    //if (mConnections.Count > 0) { BroadcastToNeighbors(userLeftMsg); }
                     break;
                 case NetEventType.ReliableMessageReceived:
                 case NetEventType.UnreliableMessageReceived:
@@ -229,6 +227,7 @@ public class RealSocket
 		if (mNetwork == null) this.Setup();
 		mNetwork.StartServer(selfNodeID.ToString());
 
+		//neightborAddressはhost:18080からゲットした数字リスト
 		foreach(string address in this.neighborAddresses) {
 			Debug.Log ("Connect to address," + address);
 			ConnectionId cid = mNetwork.Connect(address);
