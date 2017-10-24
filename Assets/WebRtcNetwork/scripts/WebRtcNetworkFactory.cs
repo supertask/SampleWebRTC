@@ -11,6 +11,7 @@ namespace Byn.Net
     //underlaying factories
     public class WebRtcNetworkFactory : UnitySingleton<WebRtcNetworkFactory>
     {
+		private static bool isDebug = false;
 
         //android needs a static init process. 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Byn.Net
             //setup failed? factory will be null so nothing can be created
             if (sStaticInitSuccessful == false)
             {
-                Debug.LogError("Initialization of the webrtc plugin failed. StaticInitSuccessful is false. ");
+				Debug.LogError("Initialization of the webrtc plugin failed. StaticInitSuccessful is false. ");
                 mFactory = null;
                 return;
             }
@@ -56,7 +57,7 @@ namespace Byn.Net
             Byn.Net.Native.NativeWebRtcNetworkFactory factory = new Byn.Net.Native.NativeWebRtcNetworkFactory();
             factory.Initialize();
             mFactory = factory;
-            Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("Using Wrapper: " + WebRtcCSharp.WebRtcWrap.GetVersion() + " WebRTC: " + WebRtcCSharp.WebRtcWrap.GetWebRtcVersion());
             
 #endif
 
@@ -92,7 +93,7 @@ namespace Byn.Net
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             Debug.Log("Initializing native webrtc for windows ...");
 #elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            Debug.LogWarning("Trying to initialize native webrtc for OSX. Note that this OS isn't fully supported yet!");
+			if (isDebug) Debug.LogWarning("Trying to initialize native webrtc for OSX. Note that this OS isn't fully supported yet!");
 #elif UNITY_ANDROID
             Debug.LogWarning("Trying to initialize native webrtc for Android.  Note that this OS isn't fully supported yet!");
 #else
@@ -115,7 +116,7 @@ namespace Byn.Net
                 return;
             sStaticInitTried = true;
 
-            Debug.Log("Using workaround for the SslStream.AuthenticateAsClient unity bug");
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("Using workaround for the SslStream.AuthenticateAsClient unity bug");
             //activate workaround for unity bug
             DefaultValues.AuthenticateAsClientBugWorkaround = true;
             
@@ -139,7 +140,7 @@ namespace Byn.Net
 #else
 
             LogNativeSupportInfo();
-            Debug.Log("Version info: [" + Native.NativeWebRtcNetworkFactory.GetVersion() + "] / [" + Native.NativeWebRtcNetworkFactory.GetWrapperVersion() + "] / [" + Native.NativeWebRtcNetworkFactory.GetWebRtcVersion() + "]");
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("Version info: [" + Native.NativeWebRtcNetworkFactory.GetVersion() + "] / [" + Native.NativeWebRtcNetworkFactory.GetWrapperVersion() + "] / [" + Native.NativeWebRtcNetworkFactory.GetWebRtcVersion() + "]");
             sStaticInitSuccessful = CheckNativeSupport();
             if (sStaticInitSuccessful == false)
                 return;
@@ -165,7 +166,7 @@ namespace Byn.Net
         {
             
 
-            Debug.Log("TryInitAndroid");
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("TryInitAndroid");
 
 
             //try loading jingle_peerconnection_so
@@ -180,17 +181,17 @@ namespace Byn.Net
             {
             }
 
-            Debug.Log("get activity");
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("get activity");
             AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
             AndroidJavaObject context = activity.Call<AndroidJavaObject>("getApplicationContext");
 
-            Debug.Log("call InitAndroidContext");
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("call InitAndroidContext");
             bool successful = WebRtcCSharp.RTCPeerConnectionFactory.InitAndroidContext(context.GetRawObject());
 
             if (successful)
             {
-                Debug.Log("Android plugin successful initialized.");
+				if (WebRtcNetworkFactory.isDebug) Debug.Log("Android plugin successful initialized.");
             }
             else
             {
@@ -211,7 +212,7 @@ namespace Byn.Net
         {
             base.OnDestroy();
 
-            Debug.Log("Network factory is being destroyed. All created basic networks will be destroyed as well!");
+			if (WebRtcNetworkFactory.isDebug) Debug.Log("Network factory is being destroyed. All created basic networks will be destroyed as well!");
             foreach (IBasicNetwork net in mCreatedNetworks)
             {
                 net.Dispose();
