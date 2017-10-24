@@ -32,10 +32,15 @@ using Byn.Common;
 /// </summary>
 public class RealSocket
 {
+	//But I don't know 
+
+
     /// <summary>
     /// This is a test server. Don't use in production! The server code is in a zip file in WebRtcNetwork
     /// </summary>
-	public string websocketUrl = "ws://10.0.2.11:18080/";
+	public string serverIpAddress;
+	public string signalingServerUrl;
+	public string websocketUrl;
 
     //public string uIceServer = "stun:because-why-not.com:12779";
 	public string uIceServer = "stun:stun.l.google.com:19302";
@@ -61,15 +66,18 @@ public class RealSocket
     private List<ConnectionId> mConnections = new List<ConnectionId>();
 	private WebSocket ws;
 
+
 	private string SETTING_NODE = "SETTING_NODE@";
 
-
 	public RealSocket() {
+		this.serverIpAddress = "192.168.1.7";
+		this.signalingServerUrl = "wss://" + this.serverIpAddress + ":12777/conferenceapp"; //wssでないとだめ
+		this.websocketUrl = "ws://" + this.serverIpAddress + ":18080/";
 		this.ws = new WebSocket(new Uri(this.websocketUrl));
     }
 
     private void Setup() {
-		mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(websocketUrl, new IceServer[] { new IceServer(uIceServer, uIceServerUser, uIceServerPassword), new IceServer(uIceServer2) });
+		mNetwork = WebRtcNetworkFactory.Instance.CreateDefault(signalingServerUrl, new IceServer[] { new IceServer(uIceServer, uIceServerUser, uIceServerPassword), new IceServer(uIceServer2) });
         if (mNetwork == null)
 			Debug.Log("Failed to access webrtc!!!!");
     }
@@ -241,7 +249,7 @@ public class RealSocket
 	}
 
 	public IEnumerator Listen() {
-		this.ws.SendString ("J");
+		this.ws.SendString("J");
 		while (true) {
 			string msg = this.ws.RecvString ();
 			if (msg != null) {
