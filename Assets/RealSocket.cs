@@ -114,7 +114,7 @@ public class RealSocket
         while (mNetwork != null && mNetwork.Dequeue(out evt))
         {
             //print to the console for debugging
-            Debug.Log(evt);
+            //Debug.Log(evt);
 
             //check every message
             switch (evt.Type) {
