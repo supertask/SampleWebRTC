@@ -16,15 +16,15 @@ public class Main : MonoBehaviour {
 	// Update is called once per frame
 	public void Update () {
 		if (Input.GetKeyDown (KeyCode.H))
-			this.socket.SendString ("Hi how are you?");
+			this.socket.BroadcastToNeighbors ("Hi how are you?");
 		else if (Input.GetKeyDown (KeyCode.G))
-			this.socket.SendString ("I'm good!");
+			this.socket.BroadcastToNeighbors ("I'm good!");
 		else if (Input.GetKeyDown (KeyCode.Y))
-			this.socket.SendString ("And you?");
+			this.socket.BroadcastToNeighbors ("And you?");
 		else if (Input.GetKeyDown (KeyCode.A))
-			this.socket.SendString("Awesome!!");
+			this.socket.BroadcastToNeighbors("Awesome!!");
 		else if (Input.GetKeyDown (KeyCode.A))
-			this.socket.SendString("Pretty bad..");
+			this.socket.BroadcastToNeighbors("Pretty bad..");
 	} 
 
     public void FixedUpdate() {
